@@ -58,4 +58,5 @@ flutter:
 
   assets:
     - assets/images/tanks/
+    - assets/images/effects/
 

@@ -3,6 +3,7 @@ import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
 
 import '../components/destructible_ground.dart';
+import '../components/muzzle_flash.dart';
 import '../components/projectile.dart';
 import '../components/tank.dart';
 
@@ -69,17 +70,42 @@ class TankGame extends FlameGame with TapDetector {
     }
   }
 
+  // void fireProjectile() {
+  //   final tank = firstChild<Tank>();
+  //   if (tank == null) return;
+  //
+  //   final start = tank.firePoint;
+  //
+  //   final double angle = tank.barrelAngle;
+  //
+  //   final double speed = power;
+  //   final Vector2 velocity = Vector2(-speed, 0)..rotate(angle);
+  //
+  //   add(Projectile(rotationAngle: angle, initialVelocity: velocity, initialPos: start));
+  // }
+
   void fireProjectile() {
     final tank = firstChild<Tank>();
     if (tank == null) return;
 
     final start = tank.firePoint;
-
-    final double angle = tank.barrelAngle;
-
+    final angle = tank.barrelAngle;
     final double speed = power;
-    final Vector2 velocity = Vector2(-speed, 0)..rotate(angle);
 
-    add(Projectile(rotationAngle: angle, initialVelocity: velocity, initialPos: start));
+    // --- ADD MUZZLE FLASH ----
+    final flash = MuzzleFlash()
+      ..position = start.clone()
+      ..angle = angle;
+    add(flash);
+
+    // ---- FIRE PROJECTILE ----
+    final velocity = Vector2(-speed, 0)..rotate(angle);
+
+    add(Projectile(
+      rotationAngle: angle,
+      initialVelocity: velocity,
+      initialPos: start,
+    ));
   }
+
 }
