@@ -1,9 +1,9 @@
-
 import 'dart:math' as math;
 
 import 'package:flame/components.dart';
 
 import '../game/tank_game.dart';
+import 'collision_flash.dart';
 import 'destructible_ground.dart';
 
 class Projectile extends SpriteComponent with HasGameRef<TankGame> {
@@ -28,29 +28,6 @@ class Projectile extends SpriteComponent with HasGameRef<TankGame> {
     angle = rotationAngle;
   }
 
-  // @override
-  // void update(double dt) {
-  //   super.update(dt);
-  //
-  //   // APPLY GRAVITY
-  //   velocity.y += gameRef.gravity * dt;
-  //
-  //   // MOVE PROJECTILE
-  //   position += velocity * dt;
-  //
-  //   // STOP WHEN HITTING GROUND
-  //   final ground = gameRef.firstChild<DestructibleGround>();
-  //   if (ground != null) {
-  //     if (position.y >= ground.position.y) {
-  //       const explosionRadius = 30.0;
-  //
-  //       ground.makeHole(position.clone(), explosionRadius);
-  //
-  //       removeFromParent(); // bullet removed
-  //     }
-  //   }
-  // }
-
   @override
   void update(double dt) {
     super.update(dt);
@@ -58,24 +35,43 @@ class Projectile extends SpriteComponent with HasGameRef<TankGame> {
     // APPLY GRAVITY
     velocity.y += gameRef.gravity * dt;
 
-    // MOVE PROJECTILE
+    // MOVE
     position += velocity * dt;
 
-    // rotate to face direction of travel
-    // use atan2(y, x) to get angle relative to +X axis
+    // ROTATE TO FACE DIRECTION
     angle = math.atan2(velocity.y, velocity.x);
 
-    // STOP WHEN HITTING GROUND
+    // ------------------------------
+    // COLLISION WITH OTHER PROJECTILES
+    // ------------------------------
+    // Collision with another projectile
+    for (final other in gameRef.children.query<Projectile>()) {
+      if (other == this) continue;
+
+      final double distance = position.distanceTo(other.position);
+
+      if (distance < 16) {
+        // --- ADD EXPLOSION FLASH ---
+        final flash = CollisionFlash()..position = position.clone();
+        gameRef.add(flash);
+
+        // remove both bullets
+        other.removeFromParent();
+        removeFromParent();
+        return;
+      }
+    }
+
+    // ------------------------------
+    // COLLISION WITH GROUND
+    // ------------------------------
     final ground = gameRef.firstChild<DestructibleGround>();
     if (ground != null) {
       if (position.y >= ground.position.y) {
         const explosionRadius = 30.0;
-
         ground.makeHole(position.clone(), explosionRadius);
-
-        removeFromParent(); // bullet removed
+        removeFromParent();
       }
     }
   }
-
 }

@@ -70,20 +70,6 @@ class TankGame extends FlameGame with TapDetector {
     }
   }
 
-  // void fireProjectile() {
-  //   final tank = firstChild<Tank>();
-  //   if (tank == null) return;
-  //
-  //   final start = tank.firePoint;
-  //
-  //   final double angle = tank.barrelAngle;
-  //
-  //   final double speed = power;
-  //   final Vector2 velocity = Vector2(-speed, 0)..rotate(angle);
-  //
-  //   add(Projectile(rotationAngle: angle, initialVelocity: velocity, initialPos: start));
-  // }
-
   void fireProjectile() {
     final tank = firstChild<Tank>();
     if (tank == null) return;
@@ -93,19 +79,15 @@ class TankGame extends FlameGame with TapDetector {
     final double speed = power;
 
     // --- ADD MUZZLE FLASH ----
-    final flash = MuzzleFlash()
-      ..position = start.clone()
-      ..angle = angle;
+    final flash =
+        MuzzleFlash()
+          ..position = start.clone()
+          ..angle = angle;
     add(flash);
 
     // ---- FIRE PROJECTILE ----
     final velocity = Vector2(-speed, 0)..rotate(angle);
 
-    add(Projectile(
-      rotationAngle: angle,
-      initialVelocity: velocity,
-      initialPos: start,
-    ));
+    add(Projectile(rotationAngle: angle, initialVelocity: velocity, initialPos: start));
   }
-
 }
