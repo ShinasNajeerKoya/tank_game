@@ -1,12 +1,14 @@
 import 'dart:math' as math;
 
 import 'package:flame/components.dart';
+import 'package:tank_game/components/power_bar.dart';
 
 import '../game/tank_game.dart';
 
 class Tank extends PositionComponent with HasGameRef<TankGame> {
   late SpriteComponent body;
   late SpriteComponent turret;
+  late PowerBar powerBar;
 
   final double spriteRotationOffset = -math.pi / 2;
 
@@ -27,6 +29,10 @@ class Tank extends PositionComponent with HasGameRef<TankGame> {
 
     add(body);
     add(turret);
+
+    // Add power bar UNDER the tank
+    powerBar = PowerBar()..position = Vector2(0, -body.size.y + 45); // 5px below the tank
+    add(powerBar);
 
     position = Vector2(80, 300);
   }

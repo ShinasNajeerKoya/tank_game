@@ -85,7 +85,6 @@
 //   }
 // }
 
-
 import 'package:flame/events.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
@@ -98,7 +97,7 @@ import '../components/ground.dart';
 
 class TankGame extends FlameGame with TapDetector {
   double power = 0;
-  double maxPower = 400;
+  double maxPower = 300;
   bool isCharging = false;
   bool powerIncreasing = true;
 
@@ -107,17 +106,24 @@ class TankGame extends FlameGame with TapDetector {
   bool angleIncreasing = true;
 
   // Gravity constant
-  final double gravity = 400; // pixels/s²
+  final double gravity = 300; // pixels/s²
 
   @override
   Color backgroundColor() => const Color(0xFF87CEEB);
 
+  // @override
+  // Future<void> onLoad() async {
+  //   add(Tank());
+  //   add(PowerBar());
+  //   add(DestructibleGround());
+  // }
   @override
   Future<void> onLoad() async {
-    add(Tank());
-    add(PowerBar());
+    final tank = Tank();
+    add(tank);
     add(DestructibleGround());
   }
+
 
   @override
   void onTapDown(TapDownInfo info) {
@@ -138,7 +144,7 @@ class TankGame extends FlameGame with TapDetector {
 
     // POWER CHARGING
     if (isCharging) {
-      power += 200 * dt * (powerIncreasing ? 1 : -1);
+      power += 300 * dt * (powerIncreasing ? 1 : -1);
 
       if (power >= maxPower) {
         power = maxPower;
@@ -170,12 +176,6 @@ class TankGame extends FlameGame with TapDetector {
     final double speed = power;
     final Vector2 velocity = Vector2(-speed, 0)..rotate(angle);
 
-    add(
-      Projectile(
-        rotationAngle: angle,
-        initialVelocity: velocity,
-        initialPos: start,
-      ),
-    );
+    add(Projectile(rotationAngle: angle, initialVelocity: velocity, initialPos: start));
   }
 }
