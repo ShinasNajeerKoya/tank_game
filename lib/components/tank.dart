@@ -17,21 +17,20 @@ class Tank extends PositionComponent with HasGameRef<TankGame> {
     body =
         SpriteComponent()
           ..sprite = await Sprite.load('tanks/body.png')
-          ..size = Vector2(80, 40)
+          ..size = Vector2(60, 60)
           ..anchor = Anchor.bottomCenter;
 
     turret =
         SpriteComponent()
           ..sprite = await Sprite.load('tanks/turret.png')
-          ..size = Vector2(15, 50)
+          ..size = Vector2(5, 40)
           ..anchor = Anchor.bottomCenter;
-    ;
 
-    add(body);
     add(turret);
+    add(body);
 
     // Add power bar UNDER the tank
-    powerBar = PowerBar()..position = Vector2(0, -body.size.y + 45); // 5px below the tank
+    powerBar = PowerBar()..position = Vector2(0, -body.size.y + 65); // 5px below the tank
     add(powerBar);
 
     position = Vector2(80, 300);
@@ -43,7 +42,7 @@ class Tank extends PositionComponent with HasGameRef<TankGame> {
 
     // rotate UPWARD instead of downward
     turret.angle = gameRef.turretAngle + spriteRotationOffset;
-    turret.position = Vector2(-body.size.x * 0.1, -body.size.y * 0.8);
+    turret.position = Vector2(-body.size.x * 0.1, -body.size.y * 0.7);
   }
 
   double get barrelAngle => gameRef.turretAngle;

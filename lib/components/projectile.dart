@@ -19,7 +19,7 @@ class Projectile extends SpriteComponent with HasGameRef<TankGame> {
   @override
   Future<void> onLoad() async {
     sprite = await Sprite.load('tanks/bullet.png');
-    size = Vector2(16, 16); // adjust based on your image
+    size = Vector2(20, 15); // adjust based on your image
     anchor = Anchor.bottomCenter;
 
     position = initialPos.clone(); // set starting location
