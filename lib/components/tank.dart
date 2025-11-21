@@ -40,26 +40,12 @@ class Tank extends PositionComponent with HasGameRef<TankGame> {
     turret.position = Vector2(-body.size.x * 0.1, -body.size.y * 0.8);
   }
 
-  // double get barrelAngle => turret.angle + math.pi / 2;
-  // double get barrelAngle => turret.angle;
   double get barrelAngle => gameRef.turretAngle;
 
   Vector2 get firePoint {
     final world = turret.absoluteCenter;
-    // final tip = Vector2(25, 0)..rotate(turret.angle);
     final tip = Vector2(-20, 0)..rotate(gameRef.turretAngle);
 
     return world + tip;
-  }
-
-  Vector2 get firePoint2 {
-    // muzzle position in turret's local coordinates
-    final offset = Vector2(-100, turret.size.y);
-
-    // rotate that local offset by *game angle*, not sprite angle
-    final rotated = offset.clone()..rotate(gameRef.turretAngle);
-
-    // convert from local -> world coordinates
-    return turret.absolutePosition + rotated;
   }
 }
