@@ -24,12 +24,26 @@ class PowerBar extends PositionComponent {
     final rRect = RRect.fromRectAndRadius(size.toRect(), const Radius.circular(5));
     canvas.drawRRect(rRect, bg);
 
-    // fill
-    double filledWidth = (game.power / game.maxPower) * size.x;
+    // If in cooldown → show reverse timer bar
+    if (game.isCoolingDown) {
+      double progress = game.cooldownTimer / game.cooldownTime; // 1 → 0
+      final cooldownPaint = Paint()..color = Colors.white;
 
+      final cooldownRect = RRect.fromRectAndRadius(
+        Rect.fromLTWH(0, 0, size.x * progress, size.y),
+        const Radius.circular(5),
+      );
+
+      canvas.drawRRect(cooldownRect, cooldownPaint);
+      return; // do NOT draw power bar during cooldown
+    }
+
+    // Normal power bar
+    double filledWidth = (game.power / game.maxPower) * size.x;
     final fill = Paint()..color = Colors.red;
 
     final fillRect = RRect.fromRectAndRadius(Rect.fromLTWH(0, 0, filledWidth, size.y), const Radius.circular(5));
+
     canvas.drawRRect(fillRect, fill);
   }
 }

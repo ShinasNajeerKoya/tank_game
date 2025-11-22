@@ -14,11 +14,15 @@ class TankGame extends FlameGame with TapDetector {
   bool powerIncreasing = true;
 
   double turretAngle = 0;
-  double turretSpeed = 1.5;
+  double turretSpeed = 4;
   bool angleIncreasing = true;
 
   // Gravity constant
   final double gravity = 300;
+
+  bool isCoolingDown = false;
+  double cooldownTime = 1.5;
+  double cooldownTimer = 0.0;
 
   @override
   Color backgroundColor() => const Color(0xFF87CEEB);
@@ -32,23 +36,41 @@ class TankGame extends FlameGame with TapDetector {
 
   @override
   void onTapDown(TapDownInfo info) {
+    if (isCoolingDown) return; // cannot charge during cooldown
     isCharging = true;
   }
 
   @override
   void onTapUp(TapUpInfo info) {
+    if (isCoolingDown) return; // cannot fire during cooldown
+
     isCharging = false;
     fireProjectile();
+
+    // RESET POWER
     power = 0;
     powerIncreasing = true;
+
+    // START COOLDOWN
+    isCoolingDown = true;
+    cooldownTimer = cooldownTime;
   }
 
   @override
   void update(double dt) {
     super.update(dt);
 
-    // POWER CHARGING
-    if (isCharging) {
+    // --- COOLDOWN HANDLING ---
+    if (isCoolingDown) {
+      cooldownTimer -= dt;
+      if (cooldownTimer <= 0) {
+        cooldownTimer = 0;
+        isCoolingDown = false;
+      }
+    }
+
+    // --- POWER CHARGING (allowed only if not cooling) ---
+    if (isCharging && !isCoolingDown) {
       power += 400 * dt * (powerIncreasing ? 1 : -1);
 
       if (power >= maxPower) {
@@ -60,13 +82,15 @@ class TankGame extends FlameGame with TapDetector {
       }
     }
 
-    // TURRET ROTATION
-    if (angleIncreasing) {
-      turretAngle += turretSpeed * dt;
-      if (turretAngle >= 3.14159) angleIncreasing = false;
-    } else {
-      turretAngle -= turretSpeed * dt;
-      if (turretAngle <= 0) angleIncreasing = true;
+    // --- TURRET ROTATION ---
+    if (!isCharging) {
+      if (angleIncreasing) {
+        turretAngle += turretSpeed * dt;
+        if (turretAngle >= 3.14159) angleIncreasing = false;
+      } else {
+        turretAngle -= turretSpeed * dt;
+        if (turretAngle <= 0) angleIncreasing = true;
+      }
     }
   }
 
