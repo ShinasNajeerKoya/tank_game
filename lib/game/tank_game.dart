@@ -29,9 +29,10 @@ class TankGame extends FlameGame with TapDetector {
 
   @override
   Future<void> onLoad() async {
+    add(DestructibleGround());
+
     final tank = Tank();
     add(tank);
-    add(DestructibleGround());
   }
 
   @override

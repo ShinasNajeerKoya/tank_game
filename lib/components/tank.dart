@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 import 'dart:ui';
 import 'package:flame/components.dart';
+import 'package:forge2d/forge2d.dart';
 import 'package:tank_game/components/power_bar.dart';
 import '../game/tank_game.dart';
 import 'destructible_ground.dart';
@@ -15,13 +16,16 @@ class Tank extends PositionComponent with HasGameRef<TankGame> {
   double verticalSpeed = 0; // gravity falling speed
   final double gravity = 600; // stronger for snappy falling
 
+  final Vector2 turretOffset = Vector2(0, 40); // move down by 80 pixels
+
   @override
   Future<void> onLoad() async {
     body =
         SpriteComponent()
           ..sprite = await Sprite.load('tanks/body.png')
           ..size = Vector2(60, 60)
-          ..anchor = Anchor.bottomCenter;
+          ..anchor = Anchor.bottomCenter
+          ..position = Vector2(0, 40);
 
     turret =
         SpriteComponent()
@@ -32,10 +36,12 @@ class Tank extends PositionComponent with HasGameRef<TankGame> {
     add(turret);
     add(body);
 
-    powerBar = PowerBar()..position = Vector2(0, -body.size.y + 65);
-    add(powerBar);
+    powerBar = PowerBar()..position = Vector2(0, -body.size.y + 100);
+    // add(powerBar);
 
-    position = Vector2(80, 300);
+    position = Vector2(80, 0);
+
+    add(powerBar);
   }
 
   @override
@@ -48,7 +54,8 @@ class Tank extends PositionComponent with HasGameRef<TankGame> {
 
   void _updateTurret() {
     turret.angle = gameRef.turretAngle + spriteRotationOffset;
-    turret.position = Vector2(-body.size.x * 0.1, -body.size.y * 0.7);
+
+    turret.position = Vector2(-body.size.x * 0.1, -body.size.y * 0.7) + turretOffset;
   }
 
   /// Ground-following with slope-alignment.
