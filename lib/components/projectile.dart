@@ -1,6 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flame/components.dart';
+import 'package:tank_game/components/tank.dart';
 
 import '../game/tank_game.dart';
 import 'collision_flash.dart';
@@ -73,5 +74,28 @@ class Projectile extends SpriteComponent with HasGameRef<TankGame> {
         removeFromParent();
       }
     }
+
+
+    // --------------------------------------
+// COLLISION WITH TANKS
+// --------------------------------------
+    for (final tank in gameRef.children.query<Tank>()) {
+      // Distance check
+      if (position.distanceTo(tank.absoluteCenter) < 30) {
+        // collision!
+        tank.loseLife();
+
+        // add small explosion effect
+        final flash = CollisionFlash()
+          ..position = position.clone();
+        gameRef.add(flash);
+
+        removeFromParent();
+        return;
+      }
+    }
+
   }
+
+
 }

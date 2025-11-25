@@ -2,6 +2,7 @@ import 'package:flame/events.dart';
 import 'package:flame/extensions.dart';
 import 'package:flame/game.dart';
 
+import '../components/bot_tank.dart';
 import '../components/destructible_ground.dart';
 import '../components/muzzle_flash.dart';
 import '../components/projectile.dart';
@@ -31,8 +32,12 @@ class TankGame extends FlameGame with TapDetector {
   Future<void> onLoad() async {
     add(DestructibleGround());
 
-    final tank = Tank();
-    add(tank);
+    final playerTank = Tank()..position = Vector2(200, 300);
+    add(playerTank);
+
+    // final bot = BotTank(target: playerTank, accuracy: 0.7, fireInterval: 2.5)
+    //   ..position = Vector2(200, 900); // right side
+    // add(bot);
   }
 
   @override
@@ -114,5 +119,12 @@ class TankGame extends FlameGame with TapDetector {
     final velocity = Vector2(-speed, 0)..rotate(angle);
 
     add(Projectile(rotationAngle: angle, initialVelocity: velocity, initialPos: start));
+  }
+
+
+  void spawnTank() {
+    final tank = Tank()
+      ..position = Vector2(80, 0);  // respawn position
+    add(tank);
   }
 }

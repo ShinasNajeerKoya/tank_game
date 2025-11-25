@@ -1,15 +1,19 @@
 import 'dart:math' as math;
 import 'dart:ui';
 import 'package:flame/components.dart';
+import 'package:flame/effects.dart';
 import 'package:forge2d/forge2d.dart';
 import 'package:tank_game/components/power_bar.dart';
+import 'package:tank_game/shared/extension/misc_extensions.dart';
 import '../game/tank_game.dart';
 import 'destructible_ground.dart';
+import 'heart_ui.dart';
 
 class Tank extends PositionComponent with HasGameRef<TankGame> {
   late SpriteComponent body;
   late SpriteComponent turret;
   late PowerBar powerBar;
+  late HeartUI heartUI;
 
   final double spriteRotationOffset = -math.pi / 2;
 
@@ -17,6 +21,8 @@ class Tank extends PositionComponent with HasGameRef<TankGame> {
   final double gravity = 600; // stronger for snappy falling
 
   final Vector2 turretOffset = Vector2(0, 40); // move down by 80 pixels
+
+  int lives = 3;
 
   @override
   Future<void> onLoad() async {
@@ -42,6 +48,9 @@ class Tank extends PositionComponent with HasGameRef<TankGame> {
     position = Vector2(80, 0);
 
     add(powerBar);
+
+    heartUI = HeartUI()..position = Vector2(-20, -80); // Above tank
+    add(heartUI);
   }
 
   @override
@@ -97,4 +106,40 @@ class Tank extends PositionComponent with HasGameRef<TankGame> {
     final tip = Vector2(-20, 0)..rotate(gameRef.turretAngle);
     return world + tip;
   }
+
+  void loseLife() {
+    lives -= 1;
+
+    // Update UI
+    heartUI.updateHearts(lives);
+
+    // Flash effect
+    body.add(
+      SequenceEffect([
+        OpacityEffect.to(0.2, EffectController(duration: 0.08)),
+        OpacityEffect.to(1.0, EffectController(duration: 0.08)),
+      ]),
+    );
+
+    // Camera shake
+    gameRef.camera.shake(intensity: 5, duration: 0.2);
+
+    if (lives <= 0) {
+      _die();
+    }
+  }
+
+  void _die() {
+    removeFromParent();
+
+    // Respawn after 2 seconds
+    Future.delayed(const Duration(seconds: 2), () {
+      gameRef.spawnTank();
+    });
+  }
+
+
+
+
+
 }
